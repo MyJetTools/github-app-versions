@@ -34,8 +34,13 @@ async fn handle_request(
     _ctx: &mut HttpContext,
 ) -> Result<HttpOkResult, HttpFailResult> {
     let git_hub_api_key = action.app.settings_reader.get_git_hub_api_key().await;
-    let result =
-        crate::github::get_last_release(git_hub_api_key.as_str(), &input_data.repo_id).await;
+    let http_clients_cache = Arc::new(flurl::HttpClientsCache::new());
+    let result = crate::github::get_last_release(
+        git_hub_api_key.as_str(),
+        &input_data.repo_id,
+        http_clients_cache,
+    )
+    .await;
     HttpOutput::as_json(result).into_ok_result(true).into()
 }
 

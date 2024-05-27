@@ -1,8 +1,14 @@
-use flurl::FlUrl;
+use std::sync::Arc;
+
+use flurl::{FlUrl, HttpClientsCache};
 
 use serde::*;
 
-pub async fn get_last_release(api_key: &str, repo_id: &str) -> Result<String, String> {
+pub async fn get_last_release(
+    api_key: &str,
+    repo_id: &str,
+    http_clients_cache: Arc<HttpClientsCache>,
+) -> Result<String, String> {
     let mut repo_id_encoded = String::new();
 
     let repo_id = if repo_id.starts_with("/") {
@@ -31,6 +37,7 @@ pub async fn get_last_release(api_key: &str, repo_id: &str) -> Result<String, St
 
     //println!("Doing request: {}", url);
     let mut result = FlUrl::new(url)
+        .with_clients_cache(http_clients_cache)
         .with_header("Accept", "application/vnd.github+json")
         .with_header("User-Agent", "RustClient")
         .with_header("Authorization", format!("Bearer {}", api_key))

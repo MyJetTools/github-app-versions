@@ -32,3 +32,9 @@ pub struct GitHubRepoSettingsModel {
     pub id: String,
     pub release_version_tag: String,
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct ClientCertInfo {
+    pub file_name: String,
+    pub password: String,
+}

@@ -1,4 +1,7 @@
-use std::{collections::BTreeMap, sync::Arc};
+use std::{
+    collections::{BTreeMap, HashMap},
+    sync::Arc,
+};
 
 use my_http_server::{macros::*, *};
 use serde::*;
@@ -41,6 +44,7 @@ async fn handle_request(
         result.insert(group.clone(), vec![]);
 
         for repo in repos {
+            let envs = HashMap::new();
             let git_hub_version = github_versions.remove(&repo.id);
             result
                 .get_mut(group.as_str())
@@ -49,6 +53,7 @@ async fn handle_request(
                     id: repo.id,
                     released_version: released_version.remove(repo.release_version_tag.as_str()),
                     git_hub_version,
+                    envs,
                 });
         }
     }
@@ -61,4 +66,5 @@ pub struct ReleaseInfoHttpModel {
     pub id: String,
     pub released_version: Option<String>,
     pub git_hub_version: Option<String>,
+    pub envs: HashMap<String, String>,
 }

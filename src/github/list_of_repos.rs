@@ -1,8 +1,14 @@
-use flurl::FlUrl;
+use std::sync::Arc;
+
+use flurl::{FlUrl, HttpClientsCache};
 use serde::*;
 
-pub async fn list_of_repos(api_key: &str) -> Vec<GitRepoItem> {
+pub async fn list_of_repos(
+    api_key: &str,
+    http_clients_cache: Arc<HttpClientsCache>,
+) -> Vec<GitRepoItem> {
     let mut result = FlUrl::new("https://api.github.com/orgs/my-cfd-platform/repos")
+        .with_clients_cache(http_clients_cache)
         .with_header("Accept", "application/vnd.github+json")
         .with_header("User-Agent", "RustClient")
         .with_header("Authorization", format!("Bearer {}", api_key))

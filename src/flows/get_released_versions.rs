@@ -1,13 +1,17 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
 
-use flurl::FlUrl;
+use flurl::{FlUrl, HttpClientsCache};
 use serde::*;
 
 use crate::app::AppContext;
 
-pub async fn get_released_versions(app: &AppContext) -> HashMap<String, String> {
+pub async fn get_released_versions(
+    app: &AppContext,
+    http_clients_cache: Arc<HttpClientsCache>,
+) -> HashMap<String, String> {
     let url = app.settings_reader.get_released_versions_yaml_url().await;
     let result = FlUrl::new(url)
+        .with_clients_cache(http_clients_cache)
         .get()
         .await
         .unwrap()
