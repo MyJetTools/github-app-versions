@@ -1,0 +1,34 @@
+[package]
+name = "github-app-versions"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tokio = { version = "*", features = ["full"] }
+
+my-http-server = { tag = "0.7.0", git = "https://github.com/MyJetTools/my-http-server.git", features = [
+    "macros",
+    "controllers",
+    "static-files",
+] }
+
+flurl = { tag = "0.5.2", git = "https://github.com/MyJetTools/fl-url" }
+my-json = { tag = "0.2.4", git = "https://github.com/MyJetTools/my-json.git" }
+rust-extensions = { tag = "0.1.4", git = "https://github.com/MyJetTools/rust-extensions.git", features = [
+    "with-tokio",
+] }
+serde_json = { version = "*" }
+serde_yaml = { version = "*" }
+serde = { version = "*", features = ["derive"] }
+async-trait = "*"
+
+url-utils = { tag = "0.1.2", git = "https://github.com/MyJetTools/url-utils.git" }
+
+my-logger = { tag = "1.1.0", git = "https://github.com/MyJetTools/my-logger.git" }
+
+my-settings-reader = { tag = "0.3.1", git = "https://github.com/MyJetTools/my-settings-reader.git" }
+
+[build-dependencies]
+ci-utils = { git = "https://github.com/MyJetTools/ci-utils.git", tag = "0.1.0" }
