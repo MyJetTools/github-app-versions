@@ -30,10 +30,6 @@ impl MyTimerTick for DataScannerTimer {
             crate::github::list_of_repos(&git_hub_api_key, http_clients_cache.clone()).await;
         self.app.cache.lock().await.set_github_repos(repos);
 
-        let versions =
-            crate::flows::get_released_versions(&self.app, http_clients_cache.clone()).await;
-        self.app.cache.lock().await.set_released_versions(versions);
-
         read_versions(&self.app, &git_hub_api_key, http_clients_cache).await;
 
         sw.pause();

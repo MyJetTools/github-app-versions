@@ -34,7 +34,7 @@ async fn handle_request(
 ) -> Result<HttpOkResult, HttpFailResult> {
     let repos = action.app.settings_reader.get_repos().await;
 
-    let mut released_version = action.app.cache.lock().await.get_released_versions();
+    let mut released_version = crate::scripts::get_to_release_versions(&action.app).await;
 
     let mut github_versions = action.app.cache.lock().await.git_hub_versions.clone();
 

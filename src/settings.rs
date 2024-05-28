@@ -7,18 +7,34 @@ use serde::{Deserialize, Serialize};
 pub struct SettingsModel {
     pub git_hub_api_key: String,
     pub repos: BTreeMap<String, Vec<GitHubRepoSettingsModel>>,
-    pub released_versions_yaml_url: String,
+    pub versions_yaml_file_path: String,
 }
 
 impl SettingsReader {
-    pub async fn get_released_versions_yaml_url(&self) -> String {
+    pub async fn get_versions_yaml_file_path(&self) -> String {
         let read_access = self.settings.read().await;
-        read_access.released_versions_yaml_url.clone()
+
+        rust_extensions::file_utils::format_path(read_access.versions_yaml_file_path.as_str())
+            .to_string()
     }
 
     pub async fn get_repos(&self) -> BTreeMap<String, Vec<GitHubRepoSettingsModel>> {
         let read_access = self.settings.read().await;
         read_access.repos.clone()
+    }
+
+    pub async fn get_service_version_tag(&self, service_id: &str) -> Option<String> {
+        let read_access = self.settings.read().await;
+
+        for services in read_access.repos.values() {
+            for service in services {
+                if service.id == service_id {
+                    return Some(service.release_version_tag.clone());
+                }
+            }
+        }
+
+        None
     }
 
     pub async fn get_git_hub_api_key(&self) -> ShortString {

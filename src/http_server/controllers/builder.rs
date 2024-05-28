@@ -11,5 +11,12 @@ pub fn build(app: &Arc<AppContext>) -> ControllersMiddleware {
     result.register_get_action(super::releases::GetGitHubReleasesAction::new(app.clone()).into());
     result.register_get_action(super::releases::GetGitHubVersionAction::new(app.clone()).into());
 
+    result.register_get_action(
+        super::releases::GetToReleaseVersionsYamlAction::new(app.clone()).into(),
+    );
+
+    result
+        .register_post_action(super::releases::SetVersionsToReleaseAction::new(app.clone()).into());
+
     result
 }

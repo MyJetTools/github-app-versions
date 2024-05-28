@@ -7,6 +7,7 @@ mod background;
 mod flows;
 mod github;
 mod http_server;
+mod scripts;
 mod settings;
 
 #[tokio::main]
