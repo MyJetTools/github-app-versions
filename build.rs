@@ -18,7 +18,7 @@ fn main() {
         &[
             //"utils.js",
             "html.js",
-            //    "storage.js",
+            "dialog.js",
             "app.js",
             //    "envs.js",
             //    "apps.js",

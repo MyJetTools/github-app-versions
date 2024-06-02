@@ -17,6 +17,13 @@ pub async fn list_of_repos(
         .await
         .unwrap();
 
+    if result.get_status_code() != 200 {
+        println!("Status: {}", result.get_status_code());
+        let result = result.get_body_as_slice().await.unwrap();
+
+        panic!("{}", String::from_utf8_lossy(result));
+    }
+
     let result = result.get_body_as_slice().await.unwrap();
 
     serde_json::from_slice(result).unwrap()

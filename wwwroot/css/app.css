@@ -9,17 +9,9 @@ body {
 #main {
     width: 100%;
     height: 100vh;
+    overflow-y: auto;
 }
 
-
-#left-panel {
-    width: 200px;
-    height: var(--app-height);
-    position: absolute;
-    left: 0;
-    top: 0;
-    box-shadow: 0 0 3px lightgray;
-}
 
 #headers {
     width: 100%;
@@ -37,4 +29,28 @@ body {
     border-radius: 5px;
     box-shadow: 0 0 5px #00000070;
     margin: 5px;
+}
+
+#modal-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #00000070;
+    backdrop-filter: blur(10px);
+}
+
+.hidden {
+    display: none;
+}
+
+.dialog-window {
+    background: white;
+    margin: 10px auto;
+    width: 700px;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px gray solid;
+    box-shadow: 1px 1px 5px #0000008f;
 }

@@ -18,7 +18,8 @@ async fn main() {
 
     http_server::start_up::setup_server(&app);
 
-    let mut data_reader_timer = MyTimer::new(Duration::from_secs(60)).set_first_tick_before_delay();
+    let mut data_reader_timer =
+        MyTimer::new(Duration::from_secs(60 * 3)).set_first_tick_before_delay();
 
     data_reader_timer.register_timer(
         "ReadDataToCache",
