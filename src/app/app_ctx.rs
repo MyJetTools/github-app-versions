@@ -24,14 +24,13 @@ pub struct AppContext {
 
 impl AppContext {
     pub async fn new(settings_reader: SettingsReader) -> Self {
-        let tags_db_path = settings_reader.get_app_versions_db_path("tags").await;
-        let app_tags_db_path = settings_reader.get_app_versions_db_path("apps-tags").await;
+        let db_path = settings_reader.get_app_versions_db_path().await;
         Self {
             settings_reader,
             states: AppStates::create_initialized().into(),
             cache: Mutex::new(CachedData::new()),
-            tags_version_maps_repo: TagsVersionMapsRepo::new(tags_db_path).await,
-            app_information_repo: AppInformationRepo::new(app_tags_db_path).await,
+            tags_version_maps_repo: TagsVersionMapsRepo::new(db_path.clone()).await,
+            app_information_repo: AppInformationRepo::new(db_path).await,
         }
     }
 

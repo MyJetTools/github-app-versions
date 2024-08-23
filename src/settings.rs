@@ -30,19 +30,9 @@ impl SettingsReader {
 
         result
     }
-    pub async fn get_app_versions_db_path(&self, db_name: &str) -> String {
+    pub async fn get_app_versions_db_path(&self) -> String {
         let read_access = self.settings.read().await;
-
-        let mut result =
-            rust_extensions::file_utils::format_path(read_access.db_path.as_str()).to_string();
-
-        if !result.ends_with(std::path::MAIN_SEPARATOR) {
-            result.push(std::path::MAIN_SEPARATOR);
-        }
-
-        result.push_str(db_name);
-
-        result
+        read_access.db_path.clone()
     }
 
     pub async fn find_env_id(&self, domain: &str) -> Option<String> {
