@@ -37,6 +37,12 @@ impl AppContext {
     }
 
     pub async fn resolve_env_id(&self, ctx: &HttpContext) -> Result<String, HttpFailResult> {
+        let query = ctx.request.get_query_string()?;
+
+        if let Some(query) = query.get_optional("env_id") {
+            return Ok(query.as_str()?.to_string());
+        }
+
         let domain = ctx.request.get_host();
         match self.settings_reader.find_env_id(domain).await {
             Some(env_id) => Ok(env_id),
