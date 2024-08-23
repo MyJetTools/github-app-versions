@@ -1,4 +1,4 @@
-use crate::{app::AppContext, db::TagVersionMapDto};
+use crate::app::AppContext;
 
 pub async fn set_version_to_release(
     app: &AppContext,
@@ -15,11 +15,7 @@ pub async fn set_version_to_release(
     let version_tag = version_tag.unwrap();
 
     app.tags_version_maps_repo
-        .insert_or_update(TagVersionMapDto {
-            env: env_id.to_string(),
-            tag: version_tag.release_version_tag,
-            version,
-        })
+        .insert_or_update(env_id.as_str(), version_tag.release_version_tag, version)
         .await;
 
     Ok(())

@@ -6,7 +6,7 @@ use my_http_server::{
 };
 use serde::Deserialize;
 
-use crate::{app::AppContext, db::AppVersionTagNameDto};
+use crate::app::AppContext;
 
 #[http_route(
     method: "POST",
@@ -48,12 +48,7 @@ async fn handle_request(
 
     for (group, repos) in model.unwrap().repos{
         for repo in repos{
-            action.app.app_information_repo.insert_or_update(AppVersionTagNameDto{
-                env: env_id.to_string(),
-                app_id: repo.id,
-                release_version_tag: repo.release_version_tag,
-                group: group.clone(),
-            }).await;
+            action.app.app_information_repo.insert_or_update(&env_id, &repo.id,  &group, &repo.release_version_tag).await;
         }
     }
 

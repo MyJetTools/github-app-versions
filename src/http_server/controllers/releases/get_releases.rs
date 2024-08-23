@@ -47,21 +47,20 @@ async fn handle_request(
 
     let mut result: BTreeMap<String, Vec<ReleaseInfoHttpModel>> = BTreeMap::new();
 
-    for app_info in apps {
-        if !result.contains_key(app_info.group.as_str()) {
-            result.insert(app_info.group.clone(), vec![]);
+    for (group, app_infos) in apps {
+        let mut infos = Vec::with_capacity(app_infos.len());
+        for app_info in app_infos {
+            let model: ReleaseInfoHttpModel = ReleaseInfoHttpModel {
+                id: app_info.id,
+                released_version: to_release_version.remove(app_info.release_version_tag.as_str()),
+                git_hub_version: github_versions.remove(app_info.release_version_tag.as_str()),
+                envs: HashMap::new(),
+            };
+
+            infos.push(model);
         }
 
-        let envs = HashMap::new();
-
-        let model: ReleaseInfoHttpModel = ReleaseInfoHttpModel {
-            id: app_info.app_id,
-            released_version: to_release_version.remove(app_info.release_version_tag.as_str()),
-            git_hub_version: github_versions.remove(app_info.release_version_tag.as_str()),
-            envs,
-        };
-
-        result.get_mut(app_info.group.as_str()).unwrap().push(model);
+        result.insert(group, infos);
     }
 
     HttpOutput::as_json(result).into_ok_result(true).into()

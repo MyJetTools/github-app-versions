@@ -35,15 +35,9 @@ async fn handle_request(
 ) -> Result<HttpOkResult, HttpFailResult> {
 
     let env_id = action.app.resolve_env_id(ctx).await?;
-    let mut result = GetGitHubVersionHttpResponse{
-        vars: BTreeMap::new()
+    let result = GetGitHubVersionHttpResponse{
+        vars: action.app.tags_version_maps_repo.get_all(env_id.as_str()).await
     };
- 
-
-    for itm in action.app.tags_version_maps_repo.get_all(env_id.as_str()).await {
-        result.vars.insert(itm.tag, itm.version);
-    }
-  
 
     HttpOutput::as_yaml(result).into_ok_result(true).into()
 }

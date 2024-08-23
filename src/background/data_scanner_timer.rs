@@ -50,25 +50,21 @@ async fn read_versions(
     for env_id in envs {
         let app_infos = app.app_information_repo.get_all(&env_id).await;
 
-        for repo in app_infos {
-            match crate::github::get_last_release(
-                git_hub_api_key,
-                &repo.app_id,
-                http_clients_cache.clone(),
-            )
-            .await
-            {
-                Ok(ver) => {
-                    app.cache
-                        .lock()
-                        .await
-                        .update_github_version(repo.app_id, ver);
-                }
-                Err(err) => {
-                    println!(
-                        "Error reading version for repo {}. Err: {}",
-                        repo.app_id, err
-                    );
+        for (_, repos) in app_infos {
+            for repo in repos {
+                match crate::github::get_last_release(
+                    git_hub_api_key,
+                    &repo.id,
+                    http_clients_cache.clone(),
+                )
+                .await
+                {
+                    Ok(ver) => {
+                        app.cache.lock().await.update_github_version(repo.id, ver);
+                    }
+                    Err(err) => {
+                        println!("Error reading version for repo {}. Err: {}", repo.id, err);
+                    }
                 }
             }
         }

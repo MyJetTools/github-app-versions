@@ -6,7 +6,7 @@ use my_http_server::{
 };
 use serde::*;
 
-use crate::{app::AppContext, db::TagVersionMapDto};
+use crate::app::AppContext;
 
 #[http_route(
     method: "POST",
@@ -46,11 +46,7 @@ async fn handle_request(
 
     let input_data = input_data.unwrap();
 
-    for itm in input_data.vars{
-        action.app.tags_version_maps_repo.insert_or_update(TagVersionMapDto{
-            env: env.to_string(), tag: itm.0, version: itm.1
-        }).await;
-    }
+    action.app.tags_version_maps_repo.bulk_insert_or_update(&env, input_data.vars).await;
    
 
     HttpOutput::Empty.into_ok_result(true).into()

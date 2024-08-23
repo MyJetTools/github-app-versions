@@ -1,35 +1,55 @@
-use my_sqlite::{SqlLiteConnection, SqlLiteConnectionBuilder};
+use std::collections::BTreeMap;
 
-use super::dto::*;
-pub const TABLE_NAME: &str = "app_versions";
+use serde::*;
+use tokio::sync::Mutex;
+
+use super::db_inner::DbInner;
+
+pub const TABLE_NAME: &str = "versions";
+
 pub struct TagsVersionMapsRepo {
-    sqlite: SqlLiteConnection,
+    inner: Mutex<DbInner<TagsVersionsDbModel>>,
 }
 
 impl TagsVersionMapsRepo {
     pub async fn new(path: String) -> Self {
         Self {
-            sqlite: SqlLiteConnectionBuilder::new(path)
-                .create_table_if_no_exists::<TagVersionMapDto>(TABLE_NAME)
-                .build()
-                .await
-                .unwrap(),
+            inner: Mutex::new(DbInner::new(path)),
         }
     }
 
-    pub async fn insert_or_update(&self, dto: TagVersionMapDto) {
-        self.sqlite
-            .insert_or_update_db_entity(TABLE_NAME, &dto)
-            .await
-            .unwrap();
+    pub async fn insert_or_update(&self, env: &str, tag: String, version: String) {
+        let mut inner = self.inner.lock().await;
+
+        let mut model: TagsVersionsDbModel = inner.load(env, TABLE_NAME).await;
+
+        model.vars.insert(tag, version);
+
+        inner.save(env, TABLE_NAME, model).await;
     }
 
-    pub async fn get_all(&self, env_id: &str) -> Vec<TagVersionMapDto> {
-        let where_model = WhereOfEnvModel { env: env_id };
+    pub async fn bulk_insert_or_update(&self, env: &str, items: BTreeMap<String, String>) {
+        let mut inner = self.inner.lock().await;
 
-        self.sqlite
-            .query_rows(TABLE_NAME, Some(&where_model))
-            .await
-            .unwrap()
+        let mut model = inner.load(env, TABLE_NAME).await;
+
+        for (tag, version) in items {
+            model.vars.insert(tag, version);
+        }
+
+        inner.save(env, TABLE_NAME, model).await;
     }
+
+    pub async fn get_all(&self, env_id: &str) -> BTreeMap<String, String> {
+        let mut inner = self.inner.lock().await;
+
+        let model = inner.load(env_id, TABLE_NAME).await;
+
+        model.vars
+    }
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
+pub struct TagsVersionsDbModel {
+    pub vars: BTreeMap<String, String>,
 }
