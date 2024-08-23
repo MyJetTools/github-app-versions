@@ -43,6 +43,7 @@ impl<T: DeserializeOwned + Serialize + Default + Clone> DbInner<T> {
             Err(_) => T::default(),
         };
 
+        println!("Loaded file: {}", path);
         self.cached_data = Some(result.clone());
 
         result
