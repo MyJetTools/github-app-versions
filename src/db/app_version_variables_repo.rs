@@ -37,6 +37,31 @@ impl AppInformationRepo {
         None
     }
 
+    pub async fn rename_app(&self, env_id: &str, old_app_id: &str, new_app_id: &str) -> bool {
+        let mut inner = self.inner.lock().await;
+        let mut model = inner.load(env_id, TABLE_NAME).await;
+
+        let mut has_to_save = true;
+        for (_, repos) in model.repos.iter_mut() {
+            if has_to_save {
+                break;
+            }
+            for repo in repos.iter_mut() {
+                if repo.id == old_app_id {
+                    repo.id = new_app_id.to_string();
+                    has_to_save = true;
+                    break;
+                }
+            }
+        }
+
+        if has_to_save {
+            inner.save(env_id, TABLE_NAME, model).await;
+        }
+
+        has_to_save
+    }
+
     pub async fn insert_or_update(
         &self,
         env_id: &str,
