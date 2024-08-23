@@ -1,17 +1,13 @@
-use std::collections::HashMap;
-
 use crate::github::GitRepoItem;
 
 pub struct CachedData {
     pub github_repos: Vec<GitRepoItem>,
-    pub git_hub_versions: HashMap<String, String>,
 }
 
 impl CachedData {
     pub fn new() -> Self {
         Self {
             github_repos: vec![],
-            git_hub_versions: HashMap::new(),
         }
     }
 
@@ -21,9 +17,5 @@ impl CachedData {
 
     pub fn get_github_repos(&self) -> Vec<GitRepoItem> {
         self.github_repos.clone()
-    }
-
-    pub fn update_github_version(&mut self, repo_id: String, version: String) {
-        self.git_hub_versions.insert(repo_id, version);
     }
 }

@@ -43,17 +43,18 @@ async fn handle_request(
         .get_all(env_id.as_str())
         .await;
 
-    let mut github_versions = action.app.cache.lock().await.git_hub_versions.clone();
+    let mut github_versions = action.app.git_hub_versions_repo.get_all().await;
 
     let mut result: BTreeMap<String, Vec<ReleaseInfoHttpModel>> = BTreeMap::new();
 
     for (group, app_infos) in apps {
         let mut infos = Vec::with_capacity(app_infos.len());
         for app_info in app_infos {
+            let git_hub_version = github_versions.remove(app_info.id.as_str());
             let model: ReleaseInfoHttpModel = ReleaseInfoHttpModel {
                 id: app_info.id,
                 released_version: to_release_version.remove(app_info.release_version_tag.as_str()),
-                git_hub_version: github_versions.remove(app_info.release_version_tag.as_str()),
+                git_hub_version,
                 envs: HashMap::new(),
             };
 

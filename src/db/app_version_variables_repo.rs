@@ -11,7 +11,7 @@ pub struct AppInformationRepo {
 }
 
 impl AppInformationRepo {
-    pub async fn new(path: String) -> Self {
+    pub fn new(path: String) -> Self {
         Self {
             inner: Mutex::new(DbInner::new(path)),
         }

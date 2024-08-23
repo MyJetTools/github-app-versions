@@ -61,7 +61,8 @@ async fn read_versions(
                 .await
                 {
                     Ok(ver) => {
-                        app.cache.lock().await.update_github_version(repo.id, ver);
+                        println!("Version for repo {} is {}", repo.id, ver);
+                        app.git_hub_versions_repo.save(repo.id, ver).await;
                     }
                     Err(err) => {
                         println!("Error reading version for repo {}. Err: {}", repo.id, err);

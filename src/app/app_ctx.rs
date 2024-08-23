@@ -5,7 +5,7 @@ use rust_extensions::AppStates;
 use tokio::sync::Mutex;
 
 use crate::{
-    db::{AppInformationRepo, TagsVersionMapsRepo},
+    db::{AppInformationRepo, GitHubVersionsRepo, TagsVersionMapsRepo},
     settings::SettingsReader,
 };
 
@@ -19,6 +19,7 @@ pub struct AppContext {
     pub cache: Mutex<CachedData>,
     pub tags_version_maps_repo: TagsVersionMapsRepo,
 
+    pub git_hub_versions_repo: GitHubVersionsRepo,
     pub app_information_repo: AppInformationRepo,
 }
 
@@ -29,8 +30,9 @@ impl AppContext {
             settings_reader,
             states: AppStates::create_initialized().into(),
             cache: Mutex::new(CachedData::new()),
-            tags_version_maps_repo: TagsVersionMapsRepo::new(db_path.clone()).await,
-            app_information_repo: AppInformationRepo::new(db_path).await,
+            tags_version_maps_repo: TagsVersionMapsRepo::new(db_path.clone()),
+            git_hub_versions_repo: GitHubVersionsRepo::new(db_path.clone()),
+            app_information_repo: AppInformationRepo::new(db_path),
         }
     }
 
