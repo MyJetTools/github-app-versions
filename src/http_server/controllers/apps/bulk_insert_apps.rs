@@ -10,7 +10,7 @@ use crate::{app::AppContext, db::AppVersionTagNameDto};
 
 #[http_route(
     method: "POST",
-    route: "/api/Releases/BulkInsertApps",
+    route: "/api/App/BulkInsert",
     controller: "Repos",
     description: "Get release yaml",
     summary: "Get release yaml",

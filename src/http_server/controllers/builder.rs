@@ -10,8 +10,6 @@ pub fn build(app: &Arc<AppContext>) -> ControllersMiddleware {
     result.register_post_action(super::apps::BulkInsertAppsHttpAction::new(app.clone()).into());
 
     result.register_get_action(super::releases::GetReleasesAction::new(app.clone()).into());
-
-    result.register_get_action(super::releases::GetReleasesAction::new(app.clone()).into());
     result.register_get_action(super::releases::GetGitHubReleasesAction::new(app.clone()).into());
     result.register_get_action(super::releases::GetGitHubVersionAction::new(app.clone()).into());
 
