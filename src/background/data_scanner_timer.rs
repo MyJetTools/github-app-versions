@@ -52,6 +52,7 @@ async fn read_versions(
 
         for (_, repos) in app_infos {
             for repo in repos {
+                println!("Reading version for repo {}", repo.id);
                 match crate::github::get_last_release(
                     git_hub_api_key,
                     &repo.id,
