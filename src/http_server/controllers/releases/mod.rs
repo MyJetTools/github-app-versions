@@ -4,7 +4,5 @@ mod get_github_releases;
 pub use get_github_releases::*;
 mod get_github_version;
 pub use get_github_version::*;
-mod get_to_release_versions_yaml;
-pub use get_to_release_versions_yaml::*;
 mod set_version_to_release_action;
 pub use set_version_to_release_action::*;

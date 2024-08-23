@@ -1,12 +1,10 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::HashMap;
 
 use crate::github::GitRepoItem;
 
 pub struct CachedData {
     pub github_repos: Vec<GitRepoItem>,
     pub git_hub_versions: HashMap<String, String>,
-
-    pub to_release_versions: Option<BTreeMap<String, String>>,
 }
 
 impl CachedData {
@@ -14,7 +12,6 @@ impl CachedData {
         Self {
             github_repos: vec![],
             git_hub_versions: HashMap::new(),
-            to_release_versions: None,
         }
     }
 

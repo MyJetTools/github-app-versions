@@ -1,16 +1,17 @@
-use std::sync::Arc;
+use std::{collections::BTreeMap, sync::Arc};
 
 use my_http_server::{
-    macros::{http_route, MyHttpInput},
+    macros::*,
     HttpContext, HttpFailResult, HttpOkResult, HttpOutput,
 };
+use serde::Serialize;
 
-use crate::{app::AppContext, scripts::VersionsYamlModel};
+use crate::app::AppContext;
 
 #[http_route(
     method: "GET",
     route: "/api/Releases/ToReleaseVersions",
-    controller: "Releases",
+    controller: "VersionTags",
     description: "Get release yaml",
     summary: "Get release yaml",
  
@@ -30,31 +31,34 @@ impl GetToReleaseVersionsYamlAction {
 
 async fn handle_request(
     action: &GetToReleaseVersionsYamlAction,
-    _ctx: &mut HttpContext,
+    ctx: &mut HttpContext,
 ) -> Result<HttpOkResult, HttpFailResult> {
- 
-    let result = {
-        let read_access = action.app.cache.lock().await;
 
-        match read_access.to_release_versions.as_ref(){
-            Some(to_release_versions) => {
-                VersionsYamlModel{
-                    vars: to_release_versions.clone()
-                }
-            }
-            None => {
-                VersionsYamlModel{
-                    vars: Default::default()
-                }
-            }
-        }
+    let env_id = action.app.resolve_env_id(ctx).await?;
+    let mut result = GetGitHubVersionHttpResponse{
+        vars: BTreeMap::new()
     };
+ 
+
+    for itm in action.app.tags_version_maps_repo.get_all(env_id.as_str()).await {
+        result.vars.insert(itm.tag, itm.version);
+    }
+  
 
     HttpOutput::as_yaml(result).into_ok_result(true).into()
 }
 
+
+/*
 #[derive(Debug, MyHttpInput)]
 pub struct GetGitHubVersionInputData {
     #[http_query(name:"repoId", description = "Repository id")]
     pub repo_id: String,
+}
+ */
+
+
+#[derive(Debug, Serialize, MyHttpObjectStructure)]
+pub struct GetGitHubVersionHttpResponse{
+    pub vars: BTreeMap<String, String>
 }

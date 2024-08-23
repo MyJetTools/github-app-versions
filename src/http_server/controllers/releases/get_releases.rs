@@ -30,32 +30,38 @@ impl GetReleasesAction {
 
 async fn handle_request(
     action: &GetReleasesAction,
-    _ctx: &mut HttpContext,
+    ctx: &mut HttpContext,
 ) -> Result<HttpOkResult, HttpFailResult> {
-    let repos = action.app.settings_reader.get_repos().await;
+    let env_id = action.app.resolve_env_id(ctx).await?;
 
-    let mut released_version = crate::scripts::get_to_release_versions(&action.app).await;
+    let mut to_release_version =
+        crate::scripts::get_to_release_versions(&action.app, env_id.as_str()).await;
+
+    let apps = action
+        .app
+        .app_information_repo
+        .get_all(env_id.as_str())
+        .await;
 
     let mut github_versions = action.app.cache.lock().await.git_hub_versions.clone();
 
     let mut result: BTreeMap<String, Vec<ReleaseInfoHttpModel>> = BTreeMap::new();
 
-    for (group, repos) in repos {
-        result.insert(group.clone(), vec![]);
-
-        for repo in repos {
-            let envs = HashMap::new();
-            let git_hub_version = github_versions.remove(&repo.id);
-            result
-                .get_mut(group.as_str())
-                .unwrap()
-                .push(ReleaseInfoHttpModel {
-                    id: repo.id,
-                    released_version: released_version.remove(repo.release_version_tag.as_str()),
-                    git_hub_version,
-                    envs,
-                });
+    for app_info in apps {
+        if !result.contains_key(app_info.group.as_str()) {
+            result.insert(app_info.group.clone(), vec![]);
         }
+
+        let envs = HashMap::new();
+
+        let model: ReleaseInfoHttpModel = ReleaseInfoHttpModel {
+            id: app_info.app_id,
+            released_version: to_release_version.remove(app_info.release_version_tag.as_str()),
+            git_hub_version: github_versions.remove(app_info.release_version_tag.as_str()),
+            envs,
+        };
+
+        result.get_mut(app_info.group.as_str()).unwrap().push(model);
     }
 
     HttpOutput::as_json(result).into_ok_result(true).into()

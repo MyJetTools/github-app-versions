@@ -4,6 +4,7 @@ use rust_extensions::MyTimer;
 use std::{sync::Arc, time::Duration};
 mod app;
 mod background;
+mod db;
 mod flows;
 mod github;
 mod http_server;
@@ -14,7 +15,7 @@ mod settings;
 async fn main() {
     let settings = settings::SettingsReader::new(".app-versions").await;
 
-    let app = Arc::new(AppContext::new(settings));
+    let app = Arc::new(AppContext::new(settings).await);
 
     http_server::start_up::setup_server(&app);
 

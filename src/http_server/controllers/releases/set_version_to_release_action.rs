@@ -33,20 +33,11 @@ impl SetVersionsToReleaseAction {
 async fn handle_request(
     action: &SetVersionsToReleaseAction,
     input_data: SetVersionToReleaseInputModel,
-    _ctx: &mut HttpContext,
+    ctx: &mut HttpContext,
 ) -> Result<HttpOkResult, HttpFailResult> {
-
-    match crate::flows::set_version_to_release(&action.app, &input_data.id, input_data.version).await{
-        Ok(_) => {
-            HttpOutput::Empty.into_ok_result(true).into()
-        },
-        Err(err) => {
-            HttpFailResult::as_validation_error(err).into()
-        },
-    }
-    
-
-    
+    let env_id = action.app.resolve_env_id(ctx).await?;
+    crate::flows::set_version_to_release(&action.app, env_id, &input_data.id, input_data.version).await.unwrap();
+   HttpOutput::Empty.into_ok_result(false)
 }
 
 
