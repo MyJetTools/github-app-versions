@@ -9,7 +9,7 @@ use crate::app::AppContext;
 
 #[http_route(
     method: "POST",
-    route: "/api/Releases/Bulk/ToReleaseVersion",
+    route: "/api/Releases/ToReleaseVersion",
     controller: "VersionTags",
     description: "Set version to release",
     summary: "Set version to release",
