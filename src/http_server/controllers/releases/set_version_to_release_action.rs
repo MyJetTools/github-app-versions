@@ -44,7 +44,7 @@ async fn handle_request(
 
 
 #[derive(Debug, MyHttpInput)]
-pub struct SetVersionToReleaseInputModel{
+struct SetVersionToReleaseInputModel{
     #[http_form_data(description = "Id of service")]
     pub id: String,
 

@@ -10,7 +10,7 @@ use crate::app::AppContext;
 
 #[http_route(
     method: "POST",
-    route: "/api/Releases/ToReleaseVersions",
+    route: "/api/Releases/Bulk/ToReleaseVersions",
     controller: "VersionTags",
     description: "Bulk Set release yaml",
     summary: "Bulk Set release yaml",
