@@ -1,9 +1,11 @@
+use std::collections::HashMap;
+
 use serde::{de::DeserializeOwned, Serialize};
 
 pub struct DbInner<T: DeserializeOwned + Serialize + Default + Clone> {
     pub path: String,
     pub file_is_created: bool,
-    pub cached_data: Option<T>,
+    pub cached_data: HashMap<String, T>,
 }
 
 impl<T: DeserializeOwned + Serialize + Default + Clone> DbInner<T> {
@@ -11,12 +13,12 @@ impl<T: DeserializeOwned + Serialize + Default + Clone> DbInner<T> {
         Self {
             file_is_created: false,
             path,
-            cached_data: None,
+            cached_data: HashMap::new(),
         }
     }
     pub async fn load(&mut self, env: &str, file: &str) -> T {
-        if let Some(data) = self.cached_data.clone() {
-            return data;
+        if let Some(data) = self.cached_data.get(env) {
+            return data.clone();
         }
 
         let mut path = self.path.clone();
@@ -44,7 +46,7 @@ impl<T: DeserializeOwned + Serialize + Default + Clone> DbInner<T> {
         };
 
         println!("Loaded file: {}", path);
-        self.cached_data = Some(result.clone());
+        self.cached_data.insert(env.to_string(), result.clone());
 
         result
     }
@@ -69,6 +71,6 @@ impl<T: DeserializeOwned + Serialize + Default + Clone> DbInner<T> {
 
         tokio::fs::write(path, to_save).await.unwrap();
         self.file_is_created = true;
-        self.cached_data = Some(model);
+        self.cached_data.insert(env.to_string(), model);
     }
 }
