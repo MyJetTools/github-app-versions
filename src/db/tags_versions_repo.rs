@@ -28,6 +28,16 @@ impl TagsVersionMapsRepo {
         inner.save(env, TABLE_NAME, model).await;
     }
 
+    pub async fn delete_if_exists(&self, env: &str, tag: &str) {
+        let mut inner = self.inner.lock().await;
+
+        let mut model: TagsVersionsDbModel = inner.load(env, TABLE_NAME).await;
+
+        model.vars.remove(tag);
+
+        inner.save(env, TABLE_NAME, model).await;
+    }
+
     pub async fn bulk_insert_or_update(&self, env: &str, items: BTreeMap<String, String>) {
         let mut inner = self.inner.lock().await;
 
