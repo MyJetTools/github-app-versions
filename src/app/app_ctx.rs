@@ -45,7 +45,10 @@ impl AppContext {
 
         let domain = ctx.request.get_host();
         match self.settings_reader.find_env_id(domain).await {
-            Some(env_id) => Ok(env_id),
+            Some(env_id) => {
+                println!("Resolved env_id {} for domain {}", env_id, domain);
+                return Ok(env_id);
+            }
             None => Err(HttpFailResult::as_unauthorized(
                 format!("Env not found for domain {}", domain).into(),
             )),
