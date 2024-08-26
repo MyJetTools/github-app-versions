@@ -47,12 +47,23 @@ async fn read_versions(
 ) {
     let envs = app.settings_reader.get_envs().await;
 
+    let mut debug = false;
+
+    if let Ok(debug_value) = std::env::var("DEBUG") {
+        if debug_value == "true" {
+            debug = true;
+        }
+    }
+
     for env_id in envs {
         let app_infos = app.app_information_repo.get_all(&env_id).await;
 
         for (_, repos) in app_infos {
             for repo in repos {
-                println!("Reading version for repo {}", repo.id);
+                if debug {
+                    println!("Reading version for repo {}", repo.id);
+                }
+
                 match crate::github::get_last_release(
                     git_hub_api_key,
                     &repo.id,
@@ -61,7 +72,9 @@ async fn read_versions(
                 .await
                 {
                     Ok(ver) => {
-                        println!("Version for repo {} is {}", repo.id, ver);
+                        if debug {
+                            println!("Version for repo {} is {}", repo.id, ver);
+                        }
                         app.git_hub_versions_repo.save(repo.id, ver).await;
                     }
                     Err(err) => {
