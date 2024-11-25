@@ -53,7 +53,9 @@ async fn handle_request(
             let git_hub_version = github_versions.remove(app_info.id.as_str());
             let model: ReleaseInfoHttpModel = ReleaseInfoHttpModel {
                 id: app_info.id,
-                released_version: to_release_version.remove(app_info.release_version_tag.as_str()),
+                released_version: to_release_version
+                    .remove(app_info.release_version_tag.as_str())
+                    .map(|v| v.ver),
                 git_hub_version,
                 envs: HashMap::new(),
             };

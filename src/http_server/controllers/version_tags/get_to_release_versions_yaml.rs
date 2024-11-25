@@ -35,8 +35,10 @@ async fn handle_request(
 ) -> Result<HttpOkResult, HttpFailResult> {
 
     let env_id = action.app.resolve_env_id(ctx).await?;
+
+    let var = action.app.tags_version_maps_repo.get_all(env_id.as_str()).await;
     let result = GetGitHubVersionHttpResponse{
-        vars: action.app.tags_version_maps_repo.get_all(env_id.as_str()).await
+        vars: var.into_iter().map(|(k, v)| (k, v.ver)).collect()
     };
 
     HttpOutput::as_yaml(result).into_ok_result(true).into()

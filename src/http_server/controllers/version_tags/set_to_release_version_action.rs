@@ -37,7 +37,7 @@ async fn handle_request(
 
     let env = action.app.resolve_env_id(ctx).await?;
 
-    action.app.tags_version_maps_repo.insert_or_update(&env, input_data.tag, input_data.version).await;
+    action.app.tags_version_maps_repo.insert_or_update(&env, input_data.tag, input_data.version, input_data.git_hub_name).await;
 
     HttpOutput::Empty.into_ok_result(true).into()
 }
@@ -50,5 +50,8 @@ pub struct SetVersionInputData {
     pub tag: String,
     #[http_form_data(description = "Version")]
     pub version: String,
+
+    #[http_form_data(description = "GitHub name")]
+    pub git_hub_name: Option<String>,
 }
 

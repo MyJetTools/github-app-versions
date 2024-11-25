@@ -36,7 +36,7 @@ async fn handle_request(
     ctx: &mut HttpContext,
 ) -> Result<HttpOkResult, HttpFailResult> {
     let env_id = action.app.resolve_env_id(ctx).await?;
-    crate::flows::set_version_to_release(&action.app, env_id, &input_data.id, input_data.version).await.unwrap();
+    crate::flows::set_version_to_release(&action.app, env_id, &input_data.id, input_data.version, None).await.unwrap();
    HttpOutput::Empty.into_ok_result(false)
 }
 
