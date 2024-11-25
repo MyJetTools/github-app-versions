@@ -88,5 +88,6 @@ pub struct TagsVersionsDbModel {
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct TagVersion {
     pub ver: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub git_hub_repo_id: Option<String>,
 }
