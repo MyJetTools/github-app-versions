@@ -23,7 +23,7 @@ impl TagsVersionMapsRepo {
         env: &str,
         tag: String,
         ver: String,
-        mut git_hub_name: Option<String>,
+        mut git_hub_repo_id: Option<String>,
     ) {
         let mut inner = self.inner.lock().await;
 
@@ -31,13 +31,19 @@ impl TagsVersionMapsRepo {
 
         let removed_value = model.vars.remove(&tag);
 
-        if git_hub_name.is_none() {
+        if git_hub_repo_id.is_none() {
             if let Some(removed_value) = removed_value {
-                git_hub_name = removed_value.git_hub_name;
+                git_hub_repo_id = removed_value.git_hub_repo_id;
             }
         }
 
-        model.vars.insert(tag, TagVersion { ver, git_hub_name });
+        model.vars.insert(
+            tag,
+            TagVersion {
+                ver,
+                git_hub_repo_id,
+            },
+        );
 
         inner.save(env, TABLE_NAME, model).await;
     }
@@ -82,5 +88,5 @@ pub struct TagsVersionsDbModel {
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct TagVersion {
     pub ver: String,
-    pub git_hub_name: Option<String>,
+    pub git_hub_repo_id: Option<String>,
 }

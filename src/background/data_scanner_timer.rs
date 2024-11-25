@@ -83,5 +83,34 @@ async fn read_versions(
                 }
             }
         }
+
+        let to_release = app.tags_version_maps_repo.get_all(env_id.as_str()).await;
+
+        for (_, ver) in to_release {
+            if let Some(git_hub_repo_id) = ver.git_hub_repo_id.as_ref() {
+                match crate::github::get_last_release(
+                    git_hub_api_key,
+                    git_hub_repo_id,
+                    http_clients_cache.clone(),
+                )
+                .await
+                {
+                    Ok(ver) => {
+                        if debug {
+                            println!("Version for repo {} is {}", git_hub_repo_id, ver);
+                        }
+                        app.git_hub_versions_repo
+                            .save(git_hub_repo_id.to_string(), ver)
+                            .await;
+                    }
+                    Err(err) => {
+                        println!(
+                            "Error reading version for repo {}. Err: {}",
+                            git_hub_repo_id, err
+                        );
+                    }
+                }
+            }
+        }
     }
 }
