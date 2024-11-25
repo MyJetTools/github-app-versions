@@ -16,7 +16,7 @@ use crate::app::AppContext;
     summary: "Get release yaml",
  
     result:[
-        {status_code: 200, description: "Git list of releases"},
+        {status_code: 200, description: "List of release versions in yaml"},
     ]
 )]
 pub struct GetToReleaseVersionsYamlAction {
@@ -37,7 +37,7 @@ async fn handle_request(
     let env_id = action.app.resolve_env_id(ctx).await?;
 
     let var = action.app.tags_version_maps_repo.get_all(env_id.as_str()).await;
-    let result = GetGitHubVersionHttpResponse{
+    let result = GetToReleaseVersionsHttpResponse{
         vars: var.into_iter().map(|(k, v)| (k, v.ver)).collect()
     };
 
@@ -45,16 +45,7 @@ async fn handle_request(
 }
 
 
-/*
-#[derive(Debug, MyHttpInput)]
-pub struct GetGitHubVersionInputData {
-    #[http_query(name:"repoId", description = "Repository id")]
-    pub repo_id: String,
-}
- */
-
-
 #[derive(Debug, Serialize, MyHttpObjectStructure)]
-pub struct GetGitHubVersionHttpResponse{
+pub struct GetToReleaseVersionsHttpResponse{
     pub vars: BTreeMap<String, String>
 }

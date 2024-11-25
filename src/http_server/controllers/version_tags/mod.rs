@@ -6,3 +6,5 @@ mod set_to_release_version_action;
 pub use set_to_release_version_action::*;
 mod delete_to_release_version_action;
 pub use delete_to_release_version_action::*;
+mod get_to_release_versions_settings;
+pub use get_to_release_versions_settings::*;

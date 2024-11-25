@@ -22,6 +22,10 @@ pub fn build(app: &Arc<AppContext>) -> ControllersMiddleware {
         super::version_tags::GetToReleaseVersionsYamlAction::new(app.clone()).into(),
     );
 
+    result.register_get_action(
+        super::version_tags::GetToReleaseVersionsSettingsAction::new(app.clone()).into(),
+    );
+
     result.register_post_action(
         super::version_tags::SetToReleaseVersionHttpAction::new(app.clone()).into(),
     );

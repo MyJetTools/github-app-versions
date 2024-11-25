@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{collections::HashSet, sync::Arc};
 
 use flurl::HttpClientsCache;
 use rust_extensions::{MyTimerTick, StopWatch};
@@ -47,6 +47,8 @@ async fn read_versions(
 ) {
     let envs = app.settings_reader.get_envs().await;
 
+    let mut loaded_data = HashSet::new();
+
     let mut debug = false;
 
     if let Ok(debug_value) = std::env::var("DEBUG") {
@@ -75,6 +77,7 @@ async fn read_versions(
                         if debug {
                             println!("Version for repo {} is {}", repo.id, ver);
                         }
+                        loaded_data.insert(repo.id.to_string());
                         app.git_hub_versions_repo.save(repo.id, ver).await;
                     }
                     Err(err) => {
@@ -88,6 +91,9 @@ async fn read_versions(
 
         for (_, ver) in to_release {
             if let Some(git_hub_repo_id) = ver.git_hub_repo_id.as_ref() {
+                if loaded_data.contains(git_hub_repo_id) {
+                    continue;
+                }
                 match crate::github::get_last_release(
                     git_hub_api_key,
                     git_hub_repo_id,
