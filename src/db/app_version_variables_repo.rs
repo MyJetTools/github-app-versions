@@ -4,7 +4,7 @@ use serde::*;
 use tokio::sync::Mutex;
 
 use super::db_inner::DbInner;
-pub const TABLE_NAME: &str = "apps";
+pub const FILE_NAME: &str = "apps";
 
 pub struct AppInformationRepo {
     inner: Mutex<DbInner<AppConfigDto>>,
@@ -19,13 +19,13 @@ impl AppInformationRepo {
 
     pub async fn get_all(&self, env_id: &str) -> BTreeMap<String, Vec<RepoInfoDto>> {
         let mut inner = self.inner.lock().await;
-        let result = inner.load(env_id, TABLE_NAME).await;
+        let result = inner.load(env_id, FILE_NAME).await;
         result.repos
     }
 
     pub async fn get(&self, env_id: &str, app_id: &str) -> Option<RepoInfoDto> {
         let mut inner = self.inner.lock().await;
-        let result = inner.load(env_id, TABLE_NAME).await;
+        let result = inner.load(env_id, FILE_NAME).await;
         for (_, items) in result.repos {
             for itm in items {
                 if itm.id == app_id {
@@ -39,7 +39,7 @@ impl AppInformationRepo {
 
     pub async fn rename_app(&self, env_id: &str, old_app_id: &str, new_app_id: &str) -> bool {
         let mut inner = self.inner.lock().await;
-        let mut model = inner.load(env_id, TABLE_NAME).await;
+        let mut model = inner.load(env_id, FILE_NAME).await;
 
         let mut has_to_save = true;
         for (_, repos) in model.repos.iter_mut() {
@@ -56,7 +56,7 @@ impl AppInformationRepo {
         }
 
         if has_to_save {
-            inner.save(env_id, TABLE_NAME, model).await;
+            inner.save(env_id, FILE_NAME, model).await;
         }
 
         has_to_save
@@ -70,7 +70,7 @@ impl AppInformationRepo {
         release_version_tag: &str,
     ) {
         let mut inner = self.inner.lock().await;
-        let mut model = inner.load(env_id, TABLE_NAME).await;
+        let mut model = inner.load(env_id, FILE_NAME).await;
 
         if !model.repos.contains_key(group_id) {
             model.repos.insert(group_id.to_string(), vec![]);
@@ -85,7 +85,7 @@ impl AppInformationRepo {
             release_version_tag: release_version_tag.to_string(),
         });
 
-        inner.save(env_id, TABLE_NAME, model).await;
+        inner.save(env_id, FILE_NAME, model).await;
     }
 }
 
