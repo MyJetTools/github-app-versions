@@ -6,11 +6,11 @@ use my_http_server::{
 };
 use serde::Serialize;
 
-use crate::{app::AppContext};
+use crate::app::AppContext;
 
 #[http_route(
     method: "GET",
-    route: "/api/Releases/ToReleaseVersions",
+    route: "/api/Releases/Settings",
     controller: "VersionTags",
     description: "Get release yaml",
     summary: "Get release yaml",
