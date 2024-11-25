@@ -34,6 +34,9 @@ pub fn build(app: &Arc<AppContext>) -> ControllersMiddleware {
         super::version_tags::DeleteToReleaseVersionHttpAction::new(app.clone()).into(),
     );
 
+    // GITHUB
+
+    result.register_get_action(super::git_hub::GeVersionsAction::new(app.clone()).into());
     /*
        result.register_post_action(
            super::version_tags::BulkSetToReleaseVersionsYamlAction::new(app.clone()).into(),
