@@ -64,7 +64,5 @@ pub async fn get_last_release(
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetVersionItem {
-    pub html_url: String,
-
     pub tag_name: String,
 }
